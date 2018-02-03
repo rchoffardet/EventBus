@@ -28,13 +28,15 @@ namespace EventBus
         
         public void Raise(dynamic payload)
         {
-            var interfacesType = payload.GetType().GetInterfaces();
+            var type = payload.GetType();
+            var types = new List<Type> { type };
+            types.AddRange(type.GetInterfaces());
 
-            foreach (var interfaceType in interfacesType)
+            foreach (var payloadType in types)
             {
-                if (listeners.ContainsKey(interfaceType))
+                if (listeners.ContainsKey(payloadType))
                 {
-                    foreach (var listener in listeners[interfaceType])
+                    foreach (dynamic listener in listeners[payloadType])
                     {
                         listener.Handle(payload);
                     }
